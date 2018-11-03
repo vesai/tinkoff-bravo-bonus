@@ -1,9 +1,110 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title></title>
+    <meta charset="utf-8">
+    <title>Баллы tinkoff platinum</title>
+    <style>
+      .bonus-spent-span__best {
+        color: green;
+        font-weight: 800;
+      }
+    </style>
   </head>
   <body>
-    TODO
+    <p>
+      Если вы владелец карты tinkoff platinum, то наверняка было желание
+      истратить все баллы за период (ну или хотя бы как можно больше баллов),
+      на этой странице можно произвести расчеты
+    </p>
+    <p>
+      Количество баллов, которые необходимо истратить: 
+      <input class="bonus-count-input">
+    </p>
+    <p>
+      Цены покупок через пробел
+      <input class="purchases-input">
+    </p>
+    <p>
+    <p>
+      Итог. Максимальное количество баллов, которые можно потратить:
+      <span class="bonus-spent-span">0</span>
+    </p>
+    <p>
+      Итог. Баллы: <span class="bonus-spent-items-span"></span>
+    </p>
+    <script>
+      var bonusCountInput = document.querySelector('.bonus-count-input');
+      var purchasesInput = document.querySelector('.purchases-input');
+      var bonusSpentSpan = document.querySelector('.bonus-spent-span');
+      var bonusSpentItemsSpan = document.querySelector('.bonus-spent-items-span');
+
+      bonusCountInput.addEventListener('change', process);
+      purchasesInput.addEventListener('input', processIfEndsWithSpace);
+      purchasesInput.addEventListener('change', process);
+
+      function processIfEndsWithSpace() {
+        var value = purchasesInput.value;
+        if (value[value.length - 1] === ' ') {
+          process();
+        }
+      }
+
+      function process() {
+        var targetPrice = parseInt(bonusCountInput.value);
+        var itemPrices = purchasesInput.value
+          .split(' ')
+          .map(function(str) { return parseInt(str); })
+          .filter(function(num) { return !Number.isNaN(num); });
+        var currentMap = new Map(); // number - { perv: number, steps: number }
+        currentMap.set(0, { prev: undefined, steps: 0 });
+
+        itemPrices.forEach(function(itemPrice) {
+          var nextMap = new Map();
+          currentMap.forEach(function (data, currentPrice) {
+            var nextPrice = currentPrice + itemPrice;
+            var nextPriceData;
+            nextMap.set(currentPrice, data);
+            if (nextPrice > targetPrice) {
+              return;
+            }
+            nextPriceData = currentMap.get(nextPrice);
+            if (nextPriceData !== undefined && nextPriceData.steps <= data.steps + 1) {
+              return;
+            }
+            nextMap.set(nextPrice, { prev: currentPrice, steps: data.steps + 1 });
+          });
+          currentMap = nextMap;
+        });
+
+        findAndWriteBestPriceAndSolution(targetPrice, currentMap);
+      }
+
+      function findAndWriteBestPriceAndSolution(targetPrice, pricesMap) {
+        var bestPrice = 0;
+        pricesMap.forEach(function(data, currentPrice) {
+          if (currentPrice > bestPrice) {
+            bestPrice = currentPrice;
+          }
+        });
+        bonusSpentSpan.textContent = bestPrice;
+        bonusSpentSpan.classList.toggle('bonus-spent-span__best', targetPrice === bestPrice);
+
+        findAndWriteBestSolution(pricesMap, bestPrice);
+      }
+
+      function findAndWriteBestSolution(pricesMap, bestPrice) {
+        var itemPrices = [];
+        var currentPrice;
+        var prevPrice;
+        currentPrice = bestPrice;
+        while (currentPrice !== 0) {
+          prevPrice = currentPrice;
+          currentPrice = pricesMap.get(currentPrice).prev;
+          itemPrices.unshift(prevPrice - currentPrice);
+        }
+
+        bonusSpentItemsSpan.innerHTML = itemPrices.join(' ');
+      }
+    </script>
   </body>
 </html>
