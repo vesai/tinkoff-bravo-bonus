@@ -1,42 +1,108 @@
 <!DOCTYPE html>
 <html>
+  <!-- Написано на коленке, но пользоваться вполне удобно -->
   <head>
     <meta charset="utf-8">
     <title>Баллы tinkoff platinum</title>
     <style>
+      html {
+        font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+        line-height: 1.44;
+        background: #333;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        display: flex;
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+      }
+
+      .main {
+        background: rgba(255,255,255,0.5);
+        padding: 20px;
+        box-sizing: border-box;
+      }
+
+      .main__header {
+        margin: 10px 0;
+      }
+
+      .main__block {
+        background: rgba(255,255,255,0.3);
+        padding: 10px;
+        border-radius: 10px;
+        margin: 20px 0;
+      }
+
+      .main__block-header {
+        margin: 5px 0;
+      }
+
       .bonus-spent-span__best {
         color: green;
         font-weight: 800;
       }
+
+      .bonus-spent-items-span:empty:before {
+        content: 'Список пуст';
+        color: rgba(0, 0, 0, 0.3);
+      }
+
+      .text-input {
+        border-radius: 5px;
+        border: none;
+        padding: 5px;
+        background: rgba(255,255,255,0.5);
+      }
+
+      @media screen and (min-width: 640px) {
+        .main {
+          width: 600px;
+          border-radius: 5px;
+          margin-top: 50px;
+          box-shadow: 0 0 20px -5px black;
+        }
+      }
     </style>
   </head>
   <body>
-    <p>
-      Если вы владелец карты tinkoff platinum, то наверняка было желание
-      истратить все баллы за период (ну или хотя бы как можно больше баллов),
-      на этой странице можно произвести расчеты
-    </p>
-    <p>
-      Количество баллов, которые необходимо истратить: 
-      <input class="bonus-count-input">
-    </p>
-    <p>
-      Цены покупок через пробел
-      <input class="purchases-input">
-    </p>
-    <p>
-    <p>
-      Итог. Максимальное количество баллов, которые можно потратить:
-      <span class="bonus-spent-span">0</span>
-    </p>
-    <p>
-      Итог. Баллы: <span class="bonus-spent-items-span"></span>
-    </p>
+    <div class="main">
+      <h1 class="main__header">Калькулятор траты баллов</h1>
+      <p>
+        Если вы владелец карты tinkoff platinum, то наверняка было желание
+        истратить все баллы за период (ну или хотя бы как можно больше баллов),
+        на этой странице можно произвести расчеты
+      </p>
+      <div class="main__block">
+        <h3 class="main__block-header">Входные данные</h3>
+        <p>
+          Количество накопленных баллов
+          <input class="text-input js-bonus-count-input">
+        </p>
+        <p>
+          Цены компенсируемых покупок через пробел
+          <input class="text-input js-purchases-input">
+        </p>
+      </div>
+      <div class="main__block">
+        <h3 class="main__block-header">Реультат</h3>
+        <p>
+          Максимальное количество баллов, которые можно потратить:
+          <span class="js-bonus-spent-span">0</span>
+        </p>
+        <p>
+          Нужно компенсировать покупки с ценами: <span class="bonus-spent-items-span js-bonus-spent-items-span"></span>
+        </p>
+      </div>
+    </div>
     <script>
-      var bonusCountInput = document.querySelector('.bonus-count-input');
-      var purchasesInput = document.querySelector('.purchases-input');
-      var bonusSpentSpan = document.querySelector('.bonus-spent-span');
-      var bonusSpentItemsSpan = document.querySelector('.bonus-spent-items-span');
+      var bonusCountInput = document.querySelector('.js-bonus-count-input');
+      var purchasesInput = document.querySelector('.js-purchases-input');
+      var bonusSpentSpan = document.querySelector('.js-bonus-spent-span');
+      var bonusSpentItemsSpan = document.querySelector('.js-bonus-spent-items-span');
 
       bonusCountInput.addEventListener('change', process);
       purchasesInput.addEventListener('input', processIfEndsWithSpace);
